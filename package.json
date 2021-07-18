@@ -25,5 +25,8 @@
       "browser",
       "android"
     ]
+  },
+  "dependencies": {
+    "cordova-plugin-advanced-http": "^3.1.1"
   }
 }

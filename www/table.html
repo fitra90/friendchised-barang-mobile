@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-between">
+            <a class="navbar-brand" href="#">
+                <img src="img/logo.png" height="30" alt="">
+            </a>
+            <form class="form-inline">
+                <button class="btn btn-outline-info my-2 my-sm-0" type="button" onclick="logout()">Logout</button>
+            </form>
+        </nav>
+        <div class="row">
+            <div class="container">
+                <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Stock</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+
+</body>
+<script src="cordova.js"></script>
+<script>
+    $(document).ready(function () {
+        checkLogin();
+        getData();
+    });
+    function getData() {
+        var apiURL = "http://localhost:3000/api/";
+        var token = localStorage.getItem('token');
+        var loader = "<tr><td colspan='4'><center><img src='img/loader.gif' style='width:300px;'></center></td></tr>";
+        $("tbody").html(loader)
+        $.ajax({
+            url: apiURL + 'stuffs',
+            type: 'get',
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': "application/json",
+                'Authorization': "Bearer " + token
+            },
+            crossDomain: true,
+            dataType: 'json',
+            statusCode: {
+                200: function (data) {
+                    let tbody = "";
+                    console.log(data)
+                    data.map((stuff, index) => {
+                        tbody += `
+                            <tr>
+                                <th scope="row">${index+1}</th>
+                                <td>${stuff.name}</td>
+                                <td>${stuff.stock}</td>
+                                <td>${stuff.status == 1 ? "Available" : "Not Available"}</td>
+                            </tr>
+                        `
+                    })
+                    $("tbody").html(tbody)
+                },
+                404: function (data) {
+                    $(".alert").show();
+                }
+            }
+        });
+
+    }
+    function checkLogin() {
+        if (localStorage.getItem("token") === null) {
+            location.href = "login.html";
+        }
+    }
+
+    function logout() {
+        var apiURL = "http://localhost:3000/api/";
+        var token = localStorage.getItem('token');
+
+        $.ajax({
+            url: apiURL + 'logout',
+            type: 'get',
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': "application/json",
+                'Authorization': "Bearer " + token
+            },
+            crossDomain: true,
+            dataType: 'json',
+            statusCode: {
+                200: function (data) {
+                    localStorage.removeItem('token');
+                    location.href="index.html";
+                },
+                404: function (data) {
+                    alert("fail to logout!")
+                }
+            }
+        });
+
+
+    }
+</script>
+
+</html>

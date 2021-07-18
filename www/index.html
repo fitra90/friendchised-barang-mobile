@@ -5,10 +5,12 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src *; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data:">
     <title>Document</title>
     <link href="css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-    <script src="js/bootstrap.min.js"></script>
     <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
 </head>
 
 <body>
@@ -20,24 +22,24 @@
                 <div id="login-row" class="row justify-content-center align-items-center">
                     <div id="login-column" class="col-md-6">
                         <div id="login-box" class="col-md-12">
-                            <form id="login-form" class="form" action="" method="post">
+                            <form id="login-form" class="form">
                                 <center>
                                     <img src="img/logo.png" alt="" style="width: 99%; margin-bottom: 20px;">
                                 </center>
                                 <div class="alert alert-danger" role="alert">
                                     <b>Oops!</b> Username / Password not found.
-                                  </div>
+                                </div>
                                 <div class="form-group">
                                     <label for="username" class="text-info">Username:</label><br>
                                     <input type="text" name="username" id="username" class="form-control">
                                 </div>
                                 <div class="form-group">
                                     <label for="password" class="text-info">Password:</label><br>
-                                    <input type="text" name="password" id="password" class="form-control">
+                                    <input type="password" name="password" id="password" class="form-control">
                                 </div>
                                 <div class="form-group">
-                                    <input type="submit" name="submit" class="btn btn-info btn-md" value="Login" style="width: 100%;
-                                    margin-top: 20px;">
+                                    <input type="button" name="submit" class="btn btn-info btn-md" value="Login" style="width: 100%;
+                                    margin-top: 20px;" onclick="doLogin()">
                                 </div>
                             </form>
                         </div>
@@ -48,5 +50,56 @@
     </body>
 
 </body>
+
+<script src="cordova.js"></script>
+<script src="js/jquery.xdomainrequest.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".alert").hide();
+        checkToken();
+    });
+
+    function doLogin() {
+        // var apiURL = "https://fitrafadilana.com/api/";
+        var apiURL = "http://localhost:3000/api/";
+        var myUsername = $("#username").val();
+        var myPassword = $("#password").val();
+        
+        var rawData = {
+            username: myUsername,
+            password: myPassword,
+        }
+
+        var dataToSend = JSON.stringify(rawData);
+
+        $.ajax({
+            url: apiURL + 'login',
+            type: 'post',
+            data: dataToSend,
+            headers: {
+                'Access-Control-Allow-Origin' : '*',
+                'Content-Type': "application/json",
+            },
+            crossDomain: true,
+            dataType: 'json',
+            statusCode : {
+                200: function(data) {
+                    $(".alert").hide();
+                    localStorage.setItem('token', data.token)
+                    location.href="table.html";
+                },
+                404: function(data) {
+                    $(".alert").show();
+                }
+            }
+        });
+    }
+
+    function checkToken() {
+        if (localStorage.getItem("token") != null) {
+            location.href = "table.html";
+        }
+    }
+</script>
 
 </html>
