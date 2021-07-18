@@ -87,12 +87,12 @@
     }
     function checkLogin() {
         if (localStorage.getItem("token") === null) {
-            location.href = "login.html";
+            location.href = "index.html";
         }
     }
 
     function logout() {
-        var apiURL = "http://localhost:3000/api/";
+        var apiURL = "https://fitrafadilana.com/api/";
         var token = localStorage.getItem('token');
 
         $.ajax({
